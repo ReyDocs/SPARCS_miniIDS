@@ -3,7 +3,8 @@ import numpy as np
 
 class detectionEngine:
     def __init__(self):
-        self.anomaly.detector = IsolationForest(
+        # Corrected typo: self.anomaly.detector -> self.anomaly_detector
+        self.anomaly_detector = IsolationForest(
             contamination=0.1,
             random_state=42
         )
@@ -11,15 +12,15 @@ class detectionEngine:
         self.training_data= []
         
     def load_signature_rules(self):
-        return{
+        return {
             'syn_flood': {
                 'condition': lambda features: (
                     features['tcp_flags'] == 2 and # SYN flag
                     features['packet_rate'] > 100
                 )
             },
-            'port_scan':{
-                'condition': lambda features:(
+            'port_scan': {
+                'condition': lambda features: (
                     features['packet_size'] < 100 and
                     features['packet_rate'] > 50
                 )
@@ -31,7 +32,7 @@ class detectionEngine:
     
     def detect_threats(self, features):
         threats = []
-        #Signature_based detection
+        # Signature-based detection
         for rule_name, rule in self.signature_rules.items():
             if rule['condition'](features):
                 threats.append({
@@ -40,14 +41,14 @@ class detectionEngine:
                     'confidence': 1.0
                 })
                 
-        #Anomaly_based detection
+        # Anomaly-based detection
         feature_vector = np.array([[
             features['packet_size'],
             features['packet_rate'],
             features['byte_rate']
         ]])
         
-        anomaly_score = self.anomaly_detector.score_samples(feature_vector) [0]
+        anomaly_score = self.anomaly_detector.score_samples(feature_vector)[0]
         if anomaly_score < -0.5:
             threats.append({
                 'type': 'anomaly',

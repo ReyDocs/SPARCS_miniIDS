@@ -20,6 +20,16 @@ def test_ids():
     ]
 
     ids = intrusionDetectionSystem()
+    
+    # --- ADDED: Train the anomaly detector with baseline data ---
+    # Features are: [packet_size, packet_rate, byte_rate]
+    dummy_normal_data = [
+        [64, 10, 640], 
+        [128, 5, 640], 
+        [60, 15, 900]
+    ]
+    ids.detection_engine.train_anomaly_detector(dummy_normal_data)
+    # ------------------------------------------------------------
 
     # Simulate packet processing and threat detection
     print("Starting IDS Test...")

@@ -24,22 +24,25 @@ class trafficAnalyzer:
             flow_key = (ip_src, ip_dst, port_src, port_dst)
             
             stats = self.flow_stats[flow_key]
-            stats ['packet_count'] +=1
-            stats ['byte_count'] +=len(packet)
+            stats['packet_count'] += 1
+            stats['byte_count'] += len(packet)
             current_time = packet.time
             
             if not stats['start_time']:
                 stats['start_time'] = current_time
             stats['last_time'] = current_time   
             
-            return self.extract_features(packet,stats)
+            return self.extract_features(packet, stats)
         
-def extract_features(self, packet, stats):
-    return{
-        'packet_size': len(packet),
-        'flow_duration': stats['last_time'] - stats['start_time'],
-        'packet_rate': stats['packet_count']  / (stats['last_time'] - stats['start_time']),
-        'byte_rate': stats['byte_count'] / (stats['last_time'] - stats['start_time']),
-        'tcp_flags': packet[TCP].flags,
-        'window_size': packet[TCP].window
-    }
+    def extract_features(self, packet, stats):
+        # Using max() to ensure duration is never strictly 0, avoiding ZeroDivisionError
+        duration = max(stats['last_time'] - stats['start_time'], 0.0001)
+        
+        return {
+            'packet_size': len(packet),
+            'flow_duration': duration,
+            'packet_rate': stats['packet_count'] / duration,
+            'byte_rate': stats['byte_count'] / duration,
+            'tcp_flags': packet[TCP].flags,
+            'window_size': packet[TCP].window
+        }
