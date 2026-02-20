@@ -30,3 +30,8 @@ class alertSystem:
             self.logger.critical(
                 f"High confidence threat detected: {json.dumps(alert)}"
             )
+        alert_df = pd.DataFrame([alert])
+        if os.path.exists("alerts.csv"):
+            alert_df.to_csv("alerts.csv", mode='a', header=False, index=False)
+        else:
+            alert_df.to_csv("alerts.csv", index=False)
