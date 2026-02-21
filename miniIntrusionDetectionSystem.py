@@ -6,7 +6,7 @@ import queue
 from scapy.all import IP, TCP
 
 class intrusionDetectionSystem:
-    def __init__(self, interface="eth0"):
+    def __init__(self, interface='en0'):
         self.packet_capture = packetCapture()
         self.traffic_analyzer= trafficAnalyzer()
         self.detection_engine = detectionEngine()
