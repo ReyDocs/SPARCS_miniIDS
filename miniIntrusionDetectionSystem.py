@@ -9,6 +9,7 @@ import numpy as np  # needed for feature arrays
 
 class intrusionDetectionSystem:
     def __init__(self, interface='en0'):
+    def __init__(self, interface="Wi-Fi"):
         self.packet_capture = packetCapture()
         self.traffic_analyzer= trafficAnalyzer()
         self.detection_engine = detectionEngine()
@@ -35,22 +36,46 @@ class intrusionDetectionSystem:
         print(f"Starting IDS on Interface {self.interface}")
         self.packet_capture.start_capture(self.interface)
         
+        training_samples = []
+        is_trained = False # Flag to prevent premature detection
+        import time
+        start_time = time.time()
+
+        print("Phase 1: Collecting baseline traffic (5 seconds)...")
+        
         while True:
             try:
-                packet=self.packet_capture.packet_queue.get(timeout=1)
+                packet = self.packet_capture.packet_queue.get(timeout=1)
                 features = self.traffic_analyzer.analyze_packet(packet)
                 
                 if features:
-                    threats = self.detection_engine.detect_threats(features)
+                    # Check if we are still in the training phase
+                    if not is_trained:
+                        training_samples.append([
+                            features['packet_size'],
+                            features['packet_rate'],
+                            features['byte_rate']
+                        ])
+                        
+                        # Once we have 5 seconds of data, train the model
+                        if time.time() - start_time > 5:
+                            print(f"Training model on {len(training_samples)} packets...")
+                            self.detection_engine.train_anomaly_detector(training_samples)
+                            is_trained = True
+                            print("Phase 2: IDS is now ACTIVE.")
                     
-                    for threat in threats:
-                        packet_info = {
-                            'source_ip': packet[IP].src,
-                            'destination_ip': packet[IP].dst,
-                            'source_port': packet[TCP].sport,
-                            'destination_port': packet[TCP].dport
-                        }
-                        self.alert_system.generate_alert(threat, packet_info)
+                    # Only run detection if the model is ready
+                    else:
+                        threats = self.detection_engine.detect_threats(features)
+                        for threat in threats:
+                            packet_info = {
+                                'source_ip': packet[IP].src,
+                                'destination_ip': packet[IP].dst,
+                                'source_port': packet[TCP].sport,
+                                'destination_port': packet[TCP].dport
+                            }
+                            self.alert_system.generate_alert(threat, packet_info)
+                            
             except queue.Empty:
                 continue
             except KeyboardInterrupt:
@@ -61,3 +86,4 @@ class intrusionDetectionSystem:
 if __name__ == "__main__":
     ids = intrusionDetectionSystem()
     ids.start()
+                break

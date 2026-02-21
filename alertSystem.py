@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import pandas as pd
 import os
+
 class alertSystem:
     def __init__(self, log_file="ids_alerts.log"):
         self.logger = logging.getLogger("IDS_Alerts")

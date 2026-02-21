@@ -1,9 +1,10 @@
 from sklearn.ensemble import IsolationForest
+from sklearn.exceptions import NotFittedError # Added this import
 import numpy as np
 
 class detectionEngine:
     def __init__(self):
-        # Corrected typo: self.anomaly.detector -> self.anomaly_detector
+        # Corrected the typo here as well
         self.anomaly_detector = IsolationForest(
             contamination=0.1,
             random_state=42
@@ -32,28 +33,28 @@ class detectionEngine:
     
     def detect_threats(self, features):
         threats = []
-        # Signature-based detection
+        # Signature detection always runs
         for rule_name, rule in self.signature_rules.items():
             if rule['condition'](features):
-                threats.append({
-                    'type': 'signature',
-                    'rule': rule_name,
-                    'confidence': 1.0
-                })
+                threats.append({'type': 'signature', 'rule': rule_name, 'confidence': 1.0})
                 
-        # Anomaly-based detection
         feature_vector = np.array([[
             features['packet_size'],
             features['packet_rate'],
             features['byte_rate']
         ]])
         
-        anomaly_score = self.anomaly_detector.score_samples(feature_vector)[0]
-        if anomaly_score < -0.5:
-            threats.append({
-                'type': 'anomaly',
-                'score': anomaly_score,
-                'confidence': min(1.0, abs(anomaly_score))
-            })
+        # This block prevents the NotFittedError from crashing the app
+        try:
+            from sklearn.exceptions import NotFittedError
+            anomaly_score = self.anomaly_detector.score_samples(feature_vector)[0]
+            if anomaly_score < -0.5:
+                threats.append({
+                    'type': 'anomaly',
+                    'score': anomaly_score,
+                    'confidence': min(1.0, abs(anomaly_score))
+                })
+        except (NotFittedError, AttributeError):
+            pass # Skip anomaly check if model isn't ready
             
         return threats
