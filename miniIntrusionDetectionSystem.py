@@ -8,7 +8,6 @@ import pandas as pd
 import numpy as np  # needed for feature arrays
 
 class intrusionDetectionSystem:
-    def __init__(self, interface='en0'):
     def __init__(self, interface="Wi-Fi"):
         self.packet_capture = packetCapture()
         self.traffic_analyzer= trafficAnalyzer()
@@ -86,4 +85,3 @@ class intrusionDetectionSystem:
 if __name__ == "__main__":
     ids = intrusionDetectionSystem()
     ids.start()
-                break
