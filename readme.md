@@ -54,6 +54,6 @@ In a second terminal, type:
 
 ## Additional Tip:
 
-Make sure to have your `requirements.txt` file ready by running `pip freeze > requirements.txt` inside your `.venv`.
+1. Make sure to have your `requirements.txt` file ready by running `pip freeze > requirements.txt` inside your `.venv`.
 
-make sure to select **en0** interface for Mac and **Wi-Fi** interface for Windows.
+2. Network interface names differ depending on the operating system. Before running the IDS, ensure that the interface parameter in the code matches your system’s active network interface. Make sure to select **en0** interface for Mac and **Wi-Fi** interface for Windows.
