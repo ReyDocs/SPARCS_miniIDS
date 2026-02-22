@@ -31,3 +31,27 @@ A real-time Network Intrusion Detection System built with Python. This system us
 
     # Install dependencies
     pip install -r requirements.txt
+
+## How to run:
+
+In order to execute the system, you need to open **two terminal windows.**
+
+**Step 1: Start the IDS engine**
+
+**Important:** You must run this terminal as an **Administrator** to allow packet sniffing.
+
+    python miniIntrusionDetectionSystem.py
+
+**Phase 1(5s):** The system collects baseline traffic. Try opening a website to generate data.
+
+**Phase 2:** Monitoring becomes active.
+
+**Step 2: Launching the Dashboard**
+
+In a second terminal, type:
+
+    streamlit run dashboard.py
+
+## Additional Tip:
+
+Make sure to have your `requirements.txt` file ready by running `pip freeze > requirements.txt` inside your `.venv`.
