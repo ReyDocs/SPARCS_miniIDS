@@ -55,3 +55,5 @@ In a second terminal, type:
 ## Additional Tip:
 
 Make sure to have your `requirements.txt` file ready by running `pip freeze > requirements.txt` inside your `.venv`.
+
+make sure to select **en0** interface for Mac and **Wi-Fi** interface for Windows.
